@@ -1,2 +1,3 @@
 # BitcoinMonitor
-监视ZB和bithumb的行情，方便搬砖
+用来监视ZB和빗썸行情的python脚本
+需要自行安装配置grafana和InfluxDB
