@@ -29,7 +29,7 @@ class Exchange(object):
     def name(self):
         return self._name
 
-    def _wget(self):
+    def _wget(self): #获取数据后插入到数据库中
         ret = False
         data = None
         try:
@@ -62,18 +62,6 @@ class Exchange(object):
             logger.error('URL Error: %s' % (e.reason))
         return ret,data
 
-    # request json sample:
-    #
-    #     {
-    #         "ticker": {
-    #             "high": "1473.89",
-    #             "low": "1361.00",
-    #             "buy": "1445.01",
-    #             "sell": "1445.95",
-    #             "last": "1443.07",
-    #             "vol": "47175.19000000"
-    #         }
-    #     }
     def _parse(self, data):
         json_data = json.loads(data)
         price = float(json_data['ticker']['last'])

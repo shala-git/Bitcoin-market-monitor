@@ -24,8 +24,8 @@ class SpreadPrice(object):
         self.client=InfluxDBClient('localhost',8086,'root',',','grafana')
         self._price = 0.0
         self._name = 'Spread'
-        self.bithumb_ticker_index=['BTC', 'ETH', 'DASH', 'LTC', 'ETC', 'XRP', 'QTUM', 'EOS']
-        self.zb_ticker_index=['btc_qc','eth_qc','dash_qc','ltc_qc','etc_qc','xrp_qc','qtum_qc','eos_qc']
+        self.bithumb_ticker_index=['BTC', 'ETH', 'DASH', 'LTC', 'ETC', 'XRP', 'QTUM', 'EOS'] #bithumb市场
+        self.zb_ticker_index=['btc_qc','eth_qc','dash_qc','ltc_qc','etc_qc','xrp_qc','qtum_qc','eos_qc'] #ZB市场
     @property
     def name(self):
         return self._name
@@ -34,10 +34,12 @@ class SpreadPrice(object):
         ret = False
         data = None
         try:
+            #从数据库中取得最后的汇率
             query = 'select last(value) from Exchange where index=\'KRW\''
             result = self.client.query(query)
             exchange_value = result.raw['series'][0]['values'][0][1]
-
+            
+            #从数据库中取得最后插入的数据
             for i in range(0, len(self.bithumb_ticker_index)):
                 print self.bithumb_ticker_index[i]
                 query = 'select last(buy) from ZB where index=\'' + self.zb_ticker_index[i] + '\''
@@ -46,6 +48,7 @@ class SpreadPrice(object):
                 query = 'select last(buy_krw) from Bithumb where index=\''+self.bithumb_ticker_index[i]+'\''
                 result = self.client.query(query)
                 bithumb_value = result.raw['series'][0]['values'][0][1]
+                #根据公式求的所需数据
                 if i == 0:
                     #BTC
                     spread_value = (float(bithumb_value) *0.998 / self._exchange - float(zb_value)) * 100000 / float(zb_value)
@@ -179,20 +182,6 @@ class SpreadPrice(object):
             pass
 
         return ret,data
-
-    # request json sample:
-    #
-    #     {
-    #         "ticker": {
-    #             "high": "1473.89",
-    #             "low": "1361.00",
-    #             "buy": "1445.01",
-    #             "sell": "1445.95",
-    #             "last": "1443.07",
-    #             "vol": "47175.19000000"
-    #         }
-    #     }
-    def _parse(self, data):
         json_data = json.loads(data)
         price = float(json_data['ticker']['last'])
         return price
