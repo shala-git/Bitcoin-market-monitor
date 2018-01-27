@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
-# author: justinli.ljt@gmail.com
-# date:   2013-11-05
+# author: jahyeonbeak@gmail.com
+# date:   2018-01-09
 
 import os,sys
 import traceback
@@ -9,12 +9,11 @@ import urllib
 import urllib2
 import time
 from influxdb import InfluxDBClient
-from logger_service import logger
 
 import json
 
 import config
-#from lib.logger_service import logger
+from lib.logger_service import logger
 
 class ZBPrice(object):
     '''

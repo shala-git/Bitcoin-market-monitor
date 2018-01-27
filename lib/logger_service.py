@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#Author: Lijingtian (lijt@kuxun.com)
 '''
 LOGGER USAGE:
 from logger_service import logger
