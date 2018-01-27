@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
-# author: justinli.ljt@gmail.com
-# date:   2013-11-05
+# author: jahyeonbeak@gmail.com
+# date:   2018-01-11
 
 import sys,os
 import time
 import traceback
 
 import config
-from logger_service import logger
-from api_price_bithumb import BithumbPrice
-from api_price_zb import ZBPrice
+from lib.logger_service import logger
+from lib.api_price_bithumb import BithumbPrice
+from lib.api_price_zb import ZBPrice
+from lib.api_price_bitflyer import BitflyerPrice
 
 class PriceUpdater(object):
     '''
@@ -27,6 +28,8 @@ class PriceUpdater(object):
         self._agents.append(agent_zb)
         agent_bithumb = BithumbPrice()
         self._agents.append(agent_bithumb)
+		agent_bitflyer = BitflyerPrice()
+        self._agents.append(agent_bitflyer)
         # add other transaction agent
         # ...
         pass

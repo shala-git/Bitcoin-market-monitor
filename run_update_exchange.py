@@ -4,8 +4,8 @@ import time
 import traceback
 
 import config
-from logger_service import logger
-from api_exchange import Exchange
+from lib.logger_service import logger
+from lib.api_exchange import Exchange
 
 class ExchangeUpdater(object):
     '''
