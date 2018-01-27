@@ -1,3 +1,3 @@
 # BitcoinMonitor
-用来监视ZB和빗썸行情的python脚本
-需要自行安装配置grafana和InfluxDB
+用来监视几个市场bitcoin行情的python脚本</br>
+需要安装配置Grafana和InfluxDB
