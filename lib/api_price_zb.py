@@ -117,7 +117,7 @@ class ZBPrice(object):
         #    logger.info('price %0.2f' % (self._price))
         return data
 
-	def query_self(self):
+    def query_self(self):
         ret, data = self._wget()
         logger.info('request %s - "%s"' % (ret, data))
         #if ret:
