@@ -35,12 +35,12 @@ class PriceUpdater(object):
 
     def update_price(self):
         #raise NameError('Exception Raise')
-        logger.info('task start - agents total %d' % (len(self._agents)))
+        logger.info('Price module task start - agents total %d' % (len(self._agents)))
         for agent in self._agents:
             logger.info('agent "%s"' % (agent.name))
 
             # get price
-            logger.info('1. get price')
+            logger.info('Get price')
             ret = agent.query()
             if not ret:
                 logger.error('query failed, skip "%s"' % (agent.name))

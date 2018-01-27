@@ -87,17 +87,25 @@ class BithumbPrice(object):
 
     def query(self):
         ret, data = self._wget()
+        logger.info('request %s' % ret)
+        #if ret:
+        #    self._price = self._parse(data)
+        #    logger.info('price %0.2f' % (self._price))
+        return data
+
+	def query_self(self):
+        ret, data = self._wget()
         logger.info('request %s - "%s"' % (ret, data))
         #if ret:
-         #   self._price = self._parse(data)
-         #  logger.info('price %0.2f' % (self._price))
+        #    self._price = self._parse(data)
+        #    logger.info('price %0.2f' % (self._price))
         return data
 
     pass
 
 def main():
     p = BithumbPrice()
-    print p.query()
+    print p.query_self()
     pass
 
 if __name__ == '__main__':

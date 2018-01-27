@@ -30,12 +30,12 @@ class SpreadUpdater(object):
 
     def update_spread(self):
         #raise NameError('Exception Raise')
-        logger.info('task start - agents total %d' % (len(self._agents)))
+        logger.info('Spread module task start - agents total %d' % (len(self._agents)))
         for agent in self._agents:
             logger.info('agent "%s"' % (agent.name))
 
             # get price
-            logger.info('1. get price')
+            logger.info('Calulate spread')
             ret = agent.query()
             
 

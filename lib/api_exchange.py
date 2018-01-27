@@ -70,6 +70,14 @@ class Exchange(object):
 
     def query(self):
         ret, data = self._wget()
+        logger.info('request %s' % ret)
+        #if ret:
+        #    self._price = self._parse(data)
+        #    logger.info('price %0.2f' % (self._price))
+        return data
+
+	def query_self(self):
+        ret, data = self._wget()
         logger.info('request %s - "%s"' % (ret, data))
         #if ret:
         #    self._price = self._parse(data)
@@ -80,7 +88,7 @@ class Exchange(object):
 
 def main():
     p = Exchange()
-    print p.query()
+    print p.query_self()
     pass
 
 if __name__ == '__main__':

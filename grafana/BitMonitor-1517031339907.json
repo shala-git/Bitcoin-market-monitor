@@ -544,6 +544,33 @@
                   "value": "BTC"
                 }
               ]
+            },
+            {
+              "alias": "bitflyer",
+              "dsType": "influxdb",
+              "groupBy": [],
+              "measurement": "Bitflyer",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "C",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "buy"
+                    ],
+                    "type": "field"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "coin",
+                  "operator": "=",
+                  "value": "BTC"
+                }
+              ]
             }
           ],
           "thresholds": [],
@@ -1549,5 +1576,5 @@
   },
   "timezone": "",
   "title": "BitMonitor",
-  "version": 7
+  "version": 8
 }
