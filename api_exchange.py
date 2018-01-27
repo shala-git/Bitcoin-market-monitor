@@ -23,7 +23,7 @@ class Exchange(object):
         self.client=InfluxDBClient('localhost',8086,'root',',','grafana')
         self._price = 0.0
         self._name = 'http://www.fixer.io'
-        self.ticker_index={'KRW', 'USD'}
+        self.ticker_index={'KRW', 'USD','JPY'} #韩币，美元，日元
         
     @property
     def name(self):
