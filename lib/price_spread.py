@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
-# author: justinli.ljt@gmail.com
-# date:   2013-11-05
+# author: jahyeonbeak@gmail.com
+# date:   2018-01-15
 
 import os,sys
+sys.path.append("..")
 import traceback
 import urllib
 import urllib2
@@ -13,7 +14,7 @@ from influxdb import InfluxDBClient
 import json
 
 import config
-#from lib.logger_service import logger
+from lib.logger_service import logger
 
 
 class SpreadPrice(object):
@@ -41,7 +42,7 @@ class SpreadPrice(object):
             
             #从数据库中取得最后插入的数据
             for i in range(0, len(self.bithumb_ticker_index)):
-                print self.bithumb_ticker_index[i]
+		ticker_index = self.bithumb_ticker_index[i]
                 query = 'select last(buy) from ZB where index=\'' + self.zb_ticker_index[i] + '\''
                 result = self.client.query(query)
                 zb_value = result.raw['series'][0]['values'][0][1]
@@ -64,7 +65,6 @@ class SpreadPrice(object):
                             }
                         }
                     ]
-                    self.client.write_points(json_body)
                 if i == 1:
                     #ETH
                     spread_value = ((float(bithumb_value) *9.98 / self._exchange - (float(zb_value) * 10)) * 100000)/(float(zb_value)*10)
@@ -80,7 +80,6 @@ class SpreadPrice(object):
                             }
                         }
                     ]
-                    self.client.write_points(json_body)
                 if i == 2:
                     #DASH
                     spread_value = (float(bithumb_value) *14.983 / self._exchange - (float(zb_value) * 15)) * 100000/(float(zb_value)*15)
@@ -96,7 +95,6 @@ class SpreadPrice(object):
                             }
                         }
                     ]
-                    self.client.write_points(json_body)
                 if i == 3:
                     #LTC
                     spread_value = (float(bithumb_value) *59.93 / self._exchange - (float(zb_value) * 60)) * 100000/(float(zb_value)*60)
@@ -112,7 +110,6 @@ class SpreadPrice(object):
                             }
                         }
                     ]
-                    self.client.write_points(json_body)
                 if i == 4:
                     #ETC
                     spread_value = (float(bithumb_value) *299.69 / self._exchange - (float(zb_value) * 300)) * 100000/(float(zb_value)*300)
@@ -128,7 +125,6 @@ class SpreadPrice(object):
                             }
                         }
                     ]
-                    self.client.write_points(json_body)
                 if i == 5:
                     #XRP
                     spread_value = (float(bithumb_value) *7991.9 / self._exchange - (float(zb_value) * 8000)) * 100000/(float(zb_value)*8000)
@@ -144,7 +140,6 @@ class SpreadPrice(object):
                             }
                         }
                     ]
-                    self.client.write_points(json_body)
                 if i == 6:
                     #QTUM
                     spread_value = (float(bithumb_value) *299.69 / self._exchange - (float(zb_value) * 300)) * 100000/(float(zb_value)*300)
@@ -160,7 +155,6 @@ class SpreadPrice(object):
                             }
                         }
                     ]
-                    self.client.write_points(json_body)
                 if i == 7:
                     #EOS
                     spread_value = (float(bithumb_value) *998 / self._exchange - (float(zb_value) * 1000)) * 100000/(float(zb_value)*1000)
@@ -176,7 +170,8 @@ class SpreadPrice(object):
                             }
                         }
                     ]
-                    self.client.write_points(json_body)
+		self.client.write_points(json_body)
+		logger.info('Calculated %s' % ticker_index)
             ret = True
         except :
             pass
@@ -188,7 +183,7 @@ class SpreadPrice(object):
 
     def query(self):
         ret, data = self._wget()
-        #logger.info('request %s - "%s"' % (ret, data))
+        logger.info('End of calculation')
         #if ret:
         #    self._price = self._parse(data)
         #    logger.info('price %0.2f' % (self._price))

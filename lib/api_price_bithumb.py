@@ -5,6 +5,7 @@
 
 import os,sys
 import traceback
+sys.path.append("..")
 import urllib
 import urllib2
 import time

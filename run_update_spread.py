@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
-# author: justinli.ljt@gmail.com
-# date:   2013-11-05
+# author: jahyeonbeak@gmail.com
+# date:   2018-01-15
 
 import sys,os
 import time
 import traceback
 
 import config
-from logger_service import logger
-from price_spread import SpreadPrice
+from lib.logger_service import logger
+from lib.price_spread import SpreadPrice
 
 class SpreadUpdater(object):
     '''

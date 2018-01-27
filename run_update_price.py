@@ -6,7 +6,6 @@
 import sys,os
 import time
 import traceback
-
 import config
 from lib.logger_service import logger
 from lib.api_price_bithumb import BithumbPrice
@@ -28,7 +27,7 @@ class PriceUpdater(object):
         self._agents.append(agent_zb)
         agent_bithumb = BithumbPrice()
         self._agents.append(agent_bithumb)
-		agent_bitflyer = BitflyerPrice()
+	agent_bitflyer = BitflyerPrice()
         self._agents.append(agent_bitflyer)
         # add other transaction agent
         # ...
