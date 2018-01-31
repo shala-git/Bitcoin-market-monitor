@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 # author: jahyeonbeak@gmail.com
-# date:   2018-01-09
+# date:   2018-01-31
 
 import os,sys
 sys.path.append("..")
@@ -16,15 +16,15 @@ import json
 import config
 from lib.logger_service import logger
 
-class OkcoinPrice(object):
+class OkexPrice(object):
     '''
     '''
     def __init__(self):
-        self._url = config.PRICE_INTERFACE['okcoin']
+        self._url = config.PRICE_INTERFACE['okex']
         self.client=InfluxDBClient('localhost',8086,'root',',','grafana')
         self._price = 0.0
-        self._name = 'http://www.okcoin.com'
-        self.ticker_index={'btc_usd', 'ltc_usd', 'eth_usd', 'etc_usd', 'bch_usd'}
+        self._name = 'http://www.okex.com'
+        self.ticker_index={'btc_usdt', 'eth_usdt', 'ltc_usdt', 'etc_usdt', 'bch_usdt',  'qtum_usdt', 'hsr_usdt', 'neo_usdt', 'gas_usdt'}
 
     @property
     def name(self):
@@ -50,7 +50,7 @@ class OkcoinPrice(object):
                 vol_value = data['ticker']['vol'] #24小时成交量
                 json_body = [
                     {
-                        "measurement": "okcoin",
+                        "measurement": "okex",
                         "tags": {
                         "coin": index,
                             "index": index 
@@ -97,7 +97,7 @@ class OkcoinPrice(object):
     pass
 
 def main():
-    p = OkcoinPrice()
+    p = OkexPrice()
     print p.query_self()
     pass
 

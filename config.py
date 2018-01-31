@@ -6,7 +6,8 @@ PRICE_INTERFACE = {
         'zb': 'http://api.zb.com/data/v1/ticker', #ZB市场接口
         'bithumb': 'https://api.bithumb.com/public/ticker/', #Bithumb市场接口
 	'bitflyer': 'https://bitflyer.jp/api/echo/price', #bitflyer echo市场接口
-	'okcoin': 'https://www.okcoin.com/api/v1/ticker'
+	'okex': 'https://www.okex.com/api/v1/ticker',
+	'huobi':'https://api.huobi.pro/market/detail/merged'
         }
 EXCHANGE_INTERFACE = 'http://api.fixer.io/latest' # 汇率接口API
 KRW_TO_USD = 0
