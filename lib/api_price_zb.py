@@ -63,8 +63,8 @@ class ZBPrice(object):
     def _wget(self):
         ret = False
         data = None
-        try:
-            for index in self.ticker_index:
+        for index in self.ticker_index:
+            try:
                 textmod ={'market':index}
                 textmod = urllib.urlencode(textmod)
                 req = urllib2.Request(url = '%s%s%s' % (self._url,'?',textmod))
@@ -95,11 +95,13 @@ class ZBPrice(object):
                     }
                 ]
                 self.client.write_points(json_body)
-            ret = True
-        except urllib2.HTTPError, e:
-            logger.error('HTTP Error: %d\t%s\t%s\t%s' % (e.code, e.reason, e.geturl(), e.read()))
-        except urllib2.URLError, e:
-            logger.error('URL Error: %s ' % (e.reason))
+            except urllib2.HTTPError, e:
+                logger.error('HTTP Error: %d\t%s\t%s\t%s' % (e.code, e.reason, e.geturl(), e.read()))
+                continue
+            except urllib2.URLError, e:
+                logger.error('URL Error: %s ' % (e.reason))
+                continue
+        ret = True
         return ret,data
 
     # request json sample:
