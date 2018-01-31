@@ -11,6 +11,7 @@ from lib.logger_service import logger
 from lib.api_price_bithumb import BithumbPrice
 from lib.api_price_zb import ZBPrice
 from lib.api_price_bitflyer import BitflyerPrice
+from lib.api_price_okcoin import OkcoinPrice
 
 class PriceUpdater(object):
     '''
@@ -29,6 +30,8 @@ class PriceUpdater(object):
         self._agents.append(agent_bithumb)
 	agent_bitflyer = BitflyerPrice()
         self._agents.append(agent_bitflyer)
+	agent_ok = OkcoinPrice()
+	self._agents.append(agent_ok)
         # add other transaction agent
         # ...
         pass
