@@ -43,11 +43,11 @@ class OkcoinPrice(object):
 		print res
                 data = json.loads(res)
                 buy_value = data['ticker']['buy']#买一价
-		high_value = data['ticker']['high']#最高价
-		last_value = data['ticker']['last']#最新成交价
-		low_value = data['ticker']['low']#最低价
-		sell_value = data['ticker']['sell']#卖一价
-		vol_value = data['ticker']['vol'] #24小时成交量
+                high_value = data['ticker']['high']#最高价
+                last_value = data['ticker']['last']#最新成交价
+                low_value = data['ticker']['low']#最低价
+                sell_value = data['ticker']['sell']#卖一价
+                vol_value = data['ticker']['vol'] #24小时成交量
                 json_body = [
                     {
                         "measurement": "okcoin",
@@ -57,11 +57,11 @@ class OkcoinPrice(object):
                         },
                         "fields": {
                         "buy": float(buy_value),
-			"high":float(high_value),
-			"last":float(last_value),
-			"low":float(low_value),
-			"sell":float(sell_value),
-			"vol":float(vol_value)
+                        "high":float(high_value),
+                        "last":float(last_value),
+                        "low":float(low_value),
+                        "sell":float(sell_value),
+                        "vol":float(vol_value)
                         }
                     }
                 ]

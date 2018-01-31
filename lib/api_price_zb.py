@@ -24,7 +24,8 @@ class ZBPrice(object):
         self.client=InfluxDBClient('localhost',8086,'root',',','grafana')
         self._price = 0.0
         self._name = 'http://www.zb.com'
-        self.ticker_index={#'btc_usdt','bcc_usdt','ubtc_usdt','ltc_usdt','eth_usdt','etc_usdt','bts_usdt','eos_usdt','qtum_usdt','hsr_usdt','xrp_usdt'
+        self.ticker_index={'btc_usdt','bcc_usdt',#'ubtc_usdt',
+		'ltc_usdt','eth_usdt','etc_usdt',#'bts_usdt','eos_usdt','qtum_usdt','hsr_usdt','xrp_usdt'
         #,'bcd_usdt','dash_usdt',#
         'btc_qc',#bcc_qc,ubtc_qc,
         'ltc_qc',
@@ -71,7 +72,12 @@ class ZBPrice(object):
                 response = urllib2.urlopen(req, timeout=10)
                 res = response.read()
                 data = json.loads(res)
-                value = data['ticker']['buy']
+                buy_value = data['ticker']['buy']
+                high_value = data['ticker']['high']#最高价
+                last_value = data['ticker']['last']#最新成交价
+                low_value = data['ticker']['low']#最低价
+                sell_value = data['ticker']['sell']#卖一价
+                vol_value = data['ticker']['vol'] #24小时成交量
                 json_body = [
                     {
                         "measurement": "ZB",
@@ -80,7 +86,12 @@ class ZBPrice(object):
                             "index": index 
                         },
                         "fields": {
-                        "buy": float(value)
+                        "buy": float(buy_value),
+                        "high":float(high_value),
+                        "last":float(last_value),
+                        "low":float(low_value),
+                        "sell":float(sell_value),
+                        "vol":float(vol_value)
                         }
                     }
                 ]
