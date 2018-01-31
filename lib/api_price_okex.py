@@ -24,7 +24,7 @@ class OkexPrice(object):
         self.client=InfluxDBClient('localhost',8086,'root',',','grafana')
         self._price = 0.0
         self._name = 'http://www.okex.com'
-        self.ticker_index={'btc_usdt', 'eth_usdt', 'ltc_usdt', 'etc_usdt', 'bch_usdt',  'qtum_usdt', 'hsr_usdt', 'neo_usdt', 'gas_usdt'}
+        self.ticker_index={'btc_usdt', 'eth_usdt', 'ltc_usdt', 'etc_usdt', 'bch_usdt'}
 
     @property
     def name(self):
@@ -40,14 +40,13 @@ class OkexPrice(object):
                 req = urllib2.Request(url = '%s%s' % (self._url,textmod))
                 response = urllib2.urlopen(req, timeout=10)
                 res = response.read()
-		print res
                 data = json.loads(res)
-                buy_value = data['ticker']['buy']#买一价
-                high_value = data['ticker']['high']#最高价
-                last_value = data['ticker']['last']#最新成交价
-                low_value = data['ticker']['low']#最低价
-                sell_value = data['ticker']['sell']#卖一价
-                vol_value = data['ticker']['vol'] #24小时成交量
+                buy_value = data['ticker']['buy']#脗貌脪禄录脹
+                high_value = data['ticker']['high']#脳卯赂脽录脹
+                last_value = data['ticker']['last']#脳卯脨脗鲁脡陆禄录脹
+                low_value = data['ticker']['low']#脳卯碌脥录脹
+                sell_value = data['ticker']['sell']#脗么脪禄录脹
+                vol_value = data['ticker']['vol'] #24脨隆脢卤鲁脡陆禄脕驴
                 json_body = [
                     {
                         "measurement": "okex",

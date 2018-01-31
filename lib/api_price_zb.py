@@ -10,7 +10,6 @@ import urllib
 import urllib2
 import time
 from influxdb import InfluxDBClient
-
 import json
 
 import config
@@ -25,7 +24,7 @@ class ZBPrice(object):
         self._price = 0.0
         self._name = 'http://www.zb.com'
         self.ticker_index={'btc_usdt','bcc_usdt',#'ubtc_usdt',
-		'ltc_usdt','eth_usdt','etc_usdt',#'bts_usdt','eos_usdt','qtum_usdt','hsr_usdt','xrp_usdt'
+        'ltc_usdt','eth_usdt','etc_usdt',#'bts_usdt','eos_usdt','qtum_usdt','hsr_usdt','xrp_usdt'
         #,'bcd_usdt','dash_usdt',#
         'btc_qc',#bcc_qc,ubtc_qc,
         'ltc_qc',
@@ -34,7 +33,7 @@ class ZBPrice(object):
         'eos_qc',
         'qtum_qc',#hsr_qc,
         'xrp_qc',#bcd_qc,
-        'dash_qc',#bcc_btc,ubtc_btc,ltc_btc,eth_btc,etc_btc,bts_btc,eos_btc,qtum_btc,hsr_btc,xrp_btc,bcd_
+        'dash_qc'#bcc_btc,ubtc_btc,ltc_btc,eth_btc,etc_btc,bts_btc,eos_btc,qtum_btc,hsr_btc,xrp_btc,bcd_
         #btc,dash_btc,
         #'sbtc_usdt',
         #sbtc_qc,sbtc_btc,
@@ -100,7 +99,7 @@ class ZBPrice(object):
         except urllib2.HTTPError, e:
             logger.error('HTTP Error: %d\t%s\t%s\t%s' % (e.code, e.reason, e.geturl(), e.read()))
         except urllib2.URLError, e:
-            logger.error('URL Error: %s' % (e.reason))
+            logger.error('URL Error: %s ' % (e.reason))
         return ret,data
 
     # request json sample:

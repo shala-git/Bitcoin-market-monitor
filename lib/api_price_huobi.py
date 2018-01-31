@@ -20,10 +20,10 @@ class HuobiPrice(object):
     '''
     '''
     def __init__(self):
-        self._url = config.PRICE_INTERFACE['zb']
+        self._url = config.PRICE_INTERFACE['huobi']
         self.client=InfluxDBClient('localhost',8086,'root',',','grafana')
         self._price = 0.0
-        self._name = 'http://www.zb.com'
+        self._name = 'http://www.huobipro.com'
         self.ticker_index={'btcusdt','ethusdt','ltcusdt','etcusdt','bchusdt'}
 
     @property
@@ -41,11 +41,11 @@ class HuobiPrice(object):
                 response = urllib2.urlopen(req, timeout=10)
                 res = response.read()
                 data = json.loads(res)
-                buy_value = data['tick']['bid']
+                buy_value = data['tick']['bid'][0]
                 high_value = data['tick']['high']#最高价
-                last_value = data['tick']['last']#最新成交价
+                last_value = data['tick']['close']#最新成交价
                 low_value = data['tick']['low']#最低价
-                sell_value = data['tick']['ask']#卖一价
+                sell_value = data['tick']['ask'][0]#卖一价
                 vol_value = data['tick']['vol'] #24小时成交量
                 json_body = [
                     {
