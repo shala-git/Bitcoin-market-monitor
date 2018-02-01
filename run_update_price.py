@@ -29,12 +29,12 @@ class PriceUpdater(object):
         self._agents.append(agent_zb)
         agent_bithumb = BithumbPrice()
         self._agents.append(agent_bithumb)
-	agent_bitflyer = BitflyerPrice()
+        agent_bitflyer = BitflyerPrice()
         self._agents.append(agent_bitflyer)
-	agent_ok = OkexPrice()
-	self._agents.append(agent_ok)
-	agent_huo = HuobiPrice()
-	self._agents.append(agent_huo)
+        agent_ok = OkexPrice()
+        self._agents.append(agent_ok)
+        agent_huo = HuobiPrice()
+        self._agents.append(agent_huo)
         # add other transaction agent
         # ...
         pass
@@ -42,20 +42,15 @@ class PriceUpdater(object):
     def update_price(self):
         #raise NameError('Exception Raise')
         logger.info('Price module task start - agents total %d' % (len(self._agents)))
-        pool = eventlet.GreenPool()  
-        pile = eventlet.GreenPile(pool)  
-        for agent in self._agents:  
-            
-        #for agent in self._agents:
+        for agent in self._agents:
             logger.info('agent "%s"' % (agent.name))
 
             # get price
             logger.info('Get price')
-            pile.spawn(agent.query()) 
-            #ret = agent.query()
-            #if not ret:
-            #    logger.error('query failed, skip "%s"' % (agent.name))
-            #    continue
+            ret = agent.query()
+            if not ret:
+                logger.error('query failed, skip "%s"' % (agent.name))
+                continue
         pass
 
     def run(self):
@@ -77,4 +72,3 @@ def main():
 
 if __name__=='__main__':
     main()
-

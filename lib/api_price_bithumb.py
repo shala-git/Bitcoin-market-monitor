@@ -21,11 +21,12 @@ class BithumbPrice(object):
     '''
     def __init__(self):
         self._url = config.PRICE_INTERFACE['bithumb']
+        self._request_timeout = int(config.REQUEST_TIMEOUT)
         self.client=InfluxDBClient('localhost',8086,'root',',','grafana')
         self._price = 0.0
         self._name = 'http://www.bithumb.com'
-        self.ticker_index={'BTC', 'ETH', 'DASH', 'LTC', 'ETC', 'XRP', #'BCH', 'XMR', 'ZEC', 
-        'QTUM', #'BTG', 
+        self.ticker_index={'BTC', 'ETH', 'DASH', 'LTC', 'ETC', 'XRP', 'BCH',# 'XMR', 'ZEC',
+        'QTUM', #'BTG',
         'EOS'}
 
     @property
@@ -39,24 +40,40 @@ class BithumbPrice(object):
             textmod = 'ALL'
             #textmod = urllib.urlencode(textmod)
             req = urllib2.Request(url = '%s%s' % (self._url,textmod))
-            response = urllib2.urlopen(req, timeout=10)
+            response = urllib2.urlopen(req, timeout=self._request_timeout)
             res = response.read()
             data = json.loads(res)
-            query = 'select last(value) from Exchange where index=\'KRW\'' 
+            query = 'select last(value) from Exchange where index=\'KRW\''
             result = self.client.query(query)
             exchange_value = result.raw['series'][0]['values'][0][1]
             for index in self.ticker_index:
-                value = data['data'][index]['buy_price']
+
+                buy_value = data['data'][index]['buy_price']
+                high_value = data['data'][index]['max_price']
+                last_value = data['data'][index]['closing_price']
+                low_value = data['data'][index]['min_price']
+                sell_value = data['data'][index]['sell_price']
+                vol_value = data['data'][index]['volume_1day']
+
                 json_body = [
                     {
                         "measurement": "Bithumb",
                         "tags": {
                         "coin": index,
-                            "index": index 
+                            "index": index
                         },
                         "fields": {
-                        "buy": float(value) / exchange_value,
-			"buy_krw": float(value)
+                        "buy": float(buy_value) / exchange_value,
+                        "high":float(high_value) / exchange_value,
+                        "last":float(last_value) / exchange_value,
+                        "low":float(low_value) / exchange_value,
+                        "sell":float(sell_value) / exchange_value,
+                        "vol":float(vol_value) / exchange_value,
+			            "buy_krw": float(buy_value),
+                        "high_krw":float(high_value),
+                        "last_krw":float(last_value),
+                        "low_krw":float(low_value),
+                        "sell_krw":float(sell_value)
                         }
                     }
                 ]
@@ -69,17 +86,22 @@ class BithumbPrice(object):
         return ret,data
 
     # request json sample:
-    #
-    #     {
-    #         "ticker": {
-    #             "high": "1473.89",
-    #             "low": "1361.00",
-    #             "buy": "1445.01",
-    #             "sell": "1445.95",
-    #             "last": "1443.07",
-    #             "vol": "47175.19000000"
-    #         }
-    #     }
+    #{
+    #"status": "0000",
+    #"data": {
+    #    "opening_price" : "504000",
+    #    "closing_price" : "505000",
+    #    "min_price"     : "504000",
+    #    "max_price"     : "516000",
+    #    "average_price" : "509533.3333",
+    #    "units_traded"  : "14.71960286",
+    #    "volume_1day"   : "14.71960286",
+    #    "volume_7day"   : "15.81960286",
+    #    "buy_price"     : "505000",
+    #    "sell_price"    : "504000",
+    #    "date"          : 1417141032622
+    #   }
+    #}
     def _parse(self, data):
         #json_data = json.loads(data)
         #price = float(data['ticker']['last'])
@@ -110,4 +132,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

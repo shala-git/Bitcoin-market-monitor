@@ -10,6 +10,7 @@ import urllib
 import urllib2
 import time
 from influxdb import InfluxDBClient
+from lib.api_service import WorkManager
 
 import json
 
@@ -22,6 +23,7 @@ class HuobiPrice(object):
     def __init__(self):
         self._url = config.PRICE_INTERFACE['huobi']
         self.client=InfluxDBClient('localhost',8086,'root',',','grafana')
+        self._request_timeout = int(config.REQUEST_TIMEOUT)
         self._price = 0.0
         self._name = 'http://www.huobipro.com'
         self.ticker_index={'btcusdt','ethusdt','ltcusdt','etcusdt','bchusdt'}
@@ -30,47 +32,54 @@ class HuobiPrice(object):
     def name(self):
         return self._name
 
+    def _getDataFromURL(self,index):
+        try:
+            textmod ={'symbol':index}
+            textmod = urllib.urlencode(textmod)
+            req = urllib2.Request(url = '%s%s%s' % (self._url,'?',textmod))
+            response = urllib2.urlopen(req, timeout=self._request_timeout)
+            res = response.read()
+            data = json.loads(res)
+            buy_value = data['tick']['bid'][0]
+            high_value = data['tick']['high']#ï¿½ï¿½ï¿½ß¼ï¿½
+            last_value = data['tick']['close']#ï¿½ï¿½ï¿½Â³É½ï¿½ï¿½ï¿½
+            low_value = data['tick']['low']#ï¿½ï¿½ï¿½Í¼ï¿½
+            sell_value = data['tick']['ask'][0]#ï¿½ï¿½Ò»ï¿½ï¿½
+            vol_value = data['tick']['vol'] #24Ð¡Ê±ï¿½É½ï¿½ï¿½ï¿½
+            json_body = [
+                {
+                    "measurement": "huobi",
+                    "tags": {
+                    "coin": index,
+                        "index": index
+                    },
+                    "fields": {
+                    "buy": float(buy_value),
+                    "high":float(high_value),
+                    "last":float(last_value),
+                    "low":float(low_value),
+                    "sell":float(sell_value),
+                    "vol":float(vol_value)
+                    }
+                }
+            ]
+            self.client.write_points(json_body)
+        except urllib2.HTTPError, e:
+            logger.error('HTTP Error: %d\t%s\t%s\t%s' % (e.code, e.reason, e.geturl(), e.read()))
+        except urllib2.URLError, e:
+            logger.error('URL Error: %s ' % (e.reason))
+
     def _wget(self):
         ret = False
         data = None
+        num_of_threads = len(self.ticker_index)
+        wm = WorkManager(num_of_threads)
+
         for index in self.ticker_index:
-            try:
-                textmod ={'symbol':index}
-                textmod = urllib.urlencode(textmod)
-                req = urllib2.Request(url = '%s%s%s' % (self._url,'?',textmod))
-                response = urllib2.urlopen(req, timeout=10)
-                res = response.read()
-                data = json.loads(res)
-                buy_value = data['tick']['bid'][0]
-                high_value = data['tick']['high']#×î¸ß¼Û
-                last_value = data['tick']['close']#×îÐÂ³É½»¼Û
-                low_value = data['tick']['low']#×îµÍ¼Û
-                sell_value = data['tick']['ask'][0]#ÂôÒ»¼Û
-                vol_value = data['tick']['vol'] #24Ð¡Ê±³É½»Á¿
-                json_body = [
-                    {
-                        "measurement": "huobi",
-                        "tags": {
-                        "coin": index,
-                            "index": index 
-                        },
-                        "fields": {
-                        "buy": float(buy_value),
-                        "high":float(high_value),
-                        "last":float(last_value),
-                        "low":float(low_value),
-                        "sell":float(sell_value),
-                        "vol":float(vol_value)
-                        }
-                    }
-                ]
-                self.client.write_points(json_body)
-            except urllib2.HTTPError, e:
-                logger.error('HTTP Error: %d\t%s\t%s\t%s' % (e.code, e.reason, e.geturl(), e.read()))
-                continue
-            except urllib2.URLError, e:
-                logger.error('URL Error: %s' % (e.reason))
-                continue
+            wm.add_job(self._getDataFromURL, index)
+        wm.start()
+        wm.wait_for_complete()
+
         ret = True
         return ret,data
 
@@ -116,4 +125,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

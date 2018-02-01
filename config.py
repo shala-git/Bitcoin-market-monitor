@@ -10,6 +10,7 @@ PRICE_INTERFACE = {
 	'huobi':'https://api.huobi.pro/market/detail/merged'
         }
 EXCHANGE_INTERFACE = 'http://api.fixer.io/latest' # 汇率接口API
+REQUEST_TIMEOUT = 5
 KRW_TO_USD = 0
 KRW_TO_CNY = 0
 USD_TO_CNY = 0

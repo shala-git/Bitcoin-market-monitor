@@ -11,6 +11,7 @@ import urllib2
 import time
 from influxdb import InfluxDBClient
 import json
+from lib.api_service import WorkManager
 
 import config
 from lib.logger_service import logger
@@ -20,6 +21,7 @@ class ZBPrice(object):
     '''
     def __init__(self):
         self._url = config.PRICE_INTERFACE['zb']
+        self._request_timeout = int(config.REQUEST_TIMEOUT)
         self.client=InfluxDBClient('localhost',8086,'root',',','grafana')
         self._price = 0.0
         self._name = 'http://www.zb.com'
@@ -33,74 +35,62 @@ class ZBPrice(object):
         'eos_qc',
         'qtum_qc',#hsr_qc,
         'xrp_qc',#bcd_qc,
-        'dash_qc'#bcc_btc,ubtc_btc,ltc_btc,eth_btc,etc_btc,bts_btc,eos_btc,qtum_btc,hsr_btc,xrp_btc,bcd_
-        #btc,dash_btc,
-        #'sbtc_usdt',
-        #sbtc_qc,sbtc_btc,
-        #'ink_usdt',#ink_qc,ink_btc,
-        #'tv_usdt',
-        #tv_qc,tv_btc,
-        #'bcx_usdt',
-        #bcx_qc,bcx_btc,
-        #'bth_usdt',
-        #bth_qc,bth_btc,
-        #'lbtc_usdt',
-        #lbtc_qc,lbtc_btc,
-        #'chat_usdt',
-        #chat_qc,chat_btc,
-        #'hlc_usdt',
-        #hlc_qc,hlc_btc,
-        #'bcw_usdt',
-        #bcw_qc,bcw_btc,
-        #'btp_usdt'}
-        #,btp_qc,btp_btc,bitcny_qc
+        'dash_qc'
         }
 
     @property
     def name(self):
         return self._name
 
+    def _getDataFromURL(self,index):
+        try:
+            textmod ={'market':index}
+            textmod = urllib.urlencode(textmod)
+            url = '%s%s%s' % (self._url,'?',textmod)
+            req = urllib2.Request(url)
+            response = urllib2.urlopen(req, timeout=self._request_timeout)
+            res = response.read()
+            data = json.loads(res)
+            buy_value = data['ticker']['buy']# buy value
+            high_value = data['ticker']['high']#24h high value
+            last_value = data['ticker']['last']#last value
+            low_value = data['ticker']['low']#24h low value
+            sell_value = data['ticker']['sell']#sell value
+            vol_value = data['ticker']['vol'] #24小时锟缴斤拷锟斤拷
+            json_body = [
+                {
+                    "measurement": "ZB",
+                    "tags": {
+                    "coin": index,
+                        "index": index
+                    },
+                    "fields": {
+                    "buy": float(buy_value),
+                    "high":float(high_value),
+                    "last":float(last_value),
+                    "low":float(low_value),
+                    "sell":float(sell_value),
+                    "vol":float(vol_value)
+                    }
+                }
+            ]
+            self.client.write_points(json_body)
+        except urllib2.HTTPError, e:
+            logger.error('HTTP Error: %d\t%s\t%s\t%s' % (e.code, e.reason, e.geturl(), e.read()))
+        except urllib2.URLError, e:
+            logger.error('URL Error: %s ' % (e.reason))
+
     def _wget(self):
         ret = False
         data = None
+        num_of_threads = len(self.ticker_index)
+        wm = WorkManager(num_of_threads)
+
         for index in self.ticker_index:
-            try:
-                textmod ={'market':index}
-                textmod = urllib.urlencode(textmod)
-                req = urllib2.Request(url = '%s%s%s' % (self._url,'?',textmod))
-                response = urllib2.urlopen(req, timeout=10)
-                res = response.read()
-                data = json.loads(res)
-                buy_value = data['ticker']['buy']
-                high_value = data['ticker']['high']#最高价
-                last_value = data['ticker']['last']#最新成交价
-                low_value = data['ticker']['low']#最低价
-                sell_value = data['ticker']['sell']#卖一价
-                vol_value = data['ticker']['vol'] #24小时成交量
-                json_body = [
-                    {
-                        "measurement": "ZB",
-                        "tags": {
-                        "coin": index,
-                            "index": index 
-                        },
-                        "fields": {
-                        "buy": float(buy_value),
-                        "high":float(high_value),
-                        "last":float(last_value),
-                        "low":float(low_value),
-                        "sell":float(sell_value),
-                        "vol":float(vol_value)
-                        }
-                    }
-                ]
-                self.client.write_points(json_body)
-            except urllib2.HTTPError, e:
-                logger.error('HTTP Error: %d\t%s\t%s\t%s' % (e.code, e.reason, e.geturl(), e.read()))
-                continue
-            except urllib2.URLError, e:
-                logger.error('URL Error: %s ' % (e.reason))
-                continue
+            wm.add_job(self._getDataFromURL, index)
+        wm.start()
+        wm.wait_for_complete()
+
         ret = True
         return ret,data
 
@@ -146,4 +136,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
