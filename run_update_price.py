@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 # author: jahyeonbeak@gmail.com
 # date:   2018-01-11
-
+import eventlet
 import sys,os
 import time
 import traceback
@@ -42,16 +42,20 @@ class PriceUpdater(object):
     def update_price(self):
         #raise NameError('Exception Raise')
         logger.info('Price module task start - agents total %d' % (len(self._agents)))
-        for agent in self._agents:
+        pool = eventlet.GreenPool()  
+        pile = eventlet.GreenPile(pool)  
+        for agent in self._agents:  
+            
+        #for agent in self._agents:
             logger.info('agent "%s"' % (agent.name))
 
             # get price
             logger.info('Get price')
-            ret = agent.query()
-            if not ret:
-                logger.error('query failed, skip "%s"' % (agent.name))
-                continue
-
+            pile.spawn(agent.query()) 
+            #ret = agent.query()
+            #if not ret:
+            #    logger.error('query failed, skip "%s"' % (agent.name))
+            #    continue
         pass
 
     def run(self):
