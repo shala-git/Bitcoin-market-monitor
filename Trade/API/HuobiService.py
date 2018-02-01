@@ -294,7 +294,7 @@ def send_margin_order(amount, source, symbol, _type, price=0):
         acct_id = accounts['data'][0]['id']
     except BaseException as e:
         print 'get acct_id error.%s' % e
-        acct_id = ACCOUNT_ID
+        #acct_id = ACCOUNT_ID
 
     params = {"account-id": acct_id,
               "amount": amount,
