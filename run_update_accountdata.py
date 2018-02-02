@@ -8,7 +8,7 @@ sys.path.append("..")
 import time
 import traceback
 import config
-from AccountBalance import *
+from Trade.AccountBalance import *
 
 class AccountDataUpdate(object):
     '''
@@ -49,7 +49,7 @@ class AccountDataUpdate(object):
             except Exception, e:
                 logger.error(traceback.format_exc())
                 logger.error(str(e))
-            time.sleep(config.BALANCE_UPDATE_INTERVAL)
+            time.sleep(int(config.BALANCE_UPDATE_INTERVAL))
             pass
         pass
     pass

@@ -103,7 +103,7 @@ def get_balance(acct_id=None):
             acct_id = ACCOUNT_ID = accounts['data'][0]['id']
         except BaseException as e:
             print 'get acct_id error.%s' % e
-            acct_id = ACCOUNT_ID
+            #acct_id = ACCOUNT_ID
 
     url = "/v1/account/accounts/{0}/balance".format(acct_id)
     params = {"account-id": acct_id}

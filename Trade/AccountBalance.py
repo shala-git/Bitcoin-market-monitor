@@ -22,7 +22,8 @@ class AccountBalance(object):
     '''
     def __init__(self):
         self.client=InfluxDBClient('localhost',8086,'root',',','grafana')
-        self.ticker_index={'btc','ustd','eth','ltc','etc','bch'}
+        self.ticker_index={'btc','usdt','eth','ltc','etc','bch'}
+        self._name = "Get balance from Huobi"
 
     @property
     def name(self):
@@ -75,12 +76,11 @@ class AccountBalance(object):
         list_count = len(balance_list)
         for balance_index in balance_list:
             if balance_index['currency'] in self.ticker_index:
-                print balance_index
                 json_body = [
                     {
                         "measurement": "AccountBalance",
                         "tags": {
-                            "currency": balance_index['currency']
+                            "currency": balance_index['currency'],
                             "type": balance_index['type']
                         },
                         "fields": {
@@ -89,7 +89,6 @@ class AccountBalance(object):
                     }
                 ]
                 self.client.write_points(json_body)
-        print list_count
 
         #vol_value = data['ticker']['vol'] #24Сʱ�ɽ���
         data = None
