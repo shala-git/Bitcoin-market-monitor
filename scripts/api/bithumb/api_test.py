@@ -39,8 +39,7 @@ rgParams = {
 # /public/orderbook
 # /public/recent_transactions
 
-#result = api.xcoinApiCall("/public/ticker", rgParams);
-result = api.http_get_request(api.api_url+'/public/ticker',rgParams)
+result = api.xcoinApiCall("/public/ticker", rgParams);
 #print("status: " + result["status"]);
 #print("last: " + result["data"]["closing_price"]);
 #print("sell: " + result["data"]["sell_price"]);

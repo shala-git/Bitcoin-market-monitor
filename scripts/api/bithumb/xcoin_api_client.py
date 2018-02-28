@@ -12,7 +12,6 @@ import math
 import base64
 import hmac, hashlib
 import urllib.parse
-import openssl
 import pycurl
 import json
 import certifi
@@ -87,6 +86,6 @@ class XCoinAPI:
 		#response_code = curl_handle.getinfo(pycurl.RESPONSE_CODE); # Get http response status code.
 
 		curl_handle.close();
-
-		return (json.loads(self.contents));
+		return (self.contents);
+		#return (json.loads(self.contents));
 
