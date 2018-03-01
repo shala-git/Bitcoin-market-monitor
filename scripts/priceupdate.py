@@ -12,6 +12,7 @@ import time
 #from influxdb import InfluxDBClient
 #from lib.api_service import WorkManager
 from api.huobipro.HuobiServices import *
+from api.influxdb.InfluxDBHelper import *
 from settings import config
 
 import json
@@ -22,11 +23,11 @@ import json
 class PriceUpdater(object):
     '''
     '''
-    def __init__(self):
+    def __init__(self, influxdb_client):
         #self._url = config.PRICE_INTERFACE['huobi']
-        #self.client=InfluxDBClient('localhost',8086,'root',',','grafana')
+        self.client=influxdb_client
         #self._request_timeout = int(config.REQUEST_TIMEOUT)
-        self._price = 0.0
+        #self._price = 0.0
         self._name = 'PriceUpdater'
         #self.ticker_index={'btcusdt','ethusdt','ltcusdt','etcusdt','bchusdt'}
 
@@ -137,12 +138,14 @@ class PriceUpdater(object):
                     }
                 ]
                 print (json_body)
+                self.client.Insert(json_body)
             i += 1
 
     pass
 
 def main():
-    p = PriceUpdater()
+    idb = InfluxDBHelper()
+    p = PriceUpdater(idb)
     p.HuobiUpdater()
     pass
 

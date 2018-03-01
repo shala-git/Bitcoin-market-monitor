@@ -8,11 +8,12 @@ import traceback
 import urllib
 #import urllib2
 import time
+import threading
 #from influxdb import InfluxDBClient
 #from lib.api_service import WorkManager
 
 import json
-import config
+from settings.config import *
 #from lib.logger_service import logger
 
 class InfluxDBHelper(object):
@@ -23,14 +24,14 @@ class InfluxDBHelper(object):
             self.client=InfluxDBClient(config.INFLUXDB_IP,INFLUXDB_PORT,INFLUXDB_USER,',',INFLUXDB_DATABASE)
         else:
             self.client=InfluxDBClient(config.INFLUXDB_IP,INFLUXDB_PORT,INFLUXDB_USER,',',dbname)
-
+        lock = threading.Lock()
     def Insert(self,json_body):
-        try:
-            #lock.acquire()
+        if lock.acquire():
             self.client.write_points(json_body)
-            #lock.release()
-        except (Exception):
-            logger.error('HTTP Error: %d\t%s\t%s\t%s' % (e.code, e.reason, e.geturl(), e.read()))
+            print('saved')
+            lock.release()
+        #except (Exception):
+        #    logger.error('HTTP Error: %d\t%s\t%s\t%s' % (e.code, e.reason, e.geturl(), e.read()))
 
 def main():
     test_json_body = [
