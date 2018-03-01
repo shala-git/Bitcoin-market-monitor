@@ -9,11 +9,11 @@ import urllib
 #import urllib2
 import time
 import threading
-#from influxdb import InfluxDBClient
+from influxdb import InfluxDBClient
 #from lib.api_service import WorkManager
 
 import json
-from settings.config import *
+from settings import config
 #from lib.logger_service import logger
 
 class InfluxDBHelper(object):
@@ -21,15 +21,15 @@ class InfluxDBHelper(object):
     '''
     def __init__(self, dbname=None):
         if dbname is None:
-            self.client=InfluxDBClient(config.INFLUXDB_IP,INFLUXDB_PORT,INFLUXDB_USER,',',INFLUXDB_DATABASE)
+            self.client=InfluxDBClient(config.INFLUXDB_IP,config.INFLUXDB_PORT,config.INFLUXDB_USER,',',config.INFLUXDB_DATABASE)
         else:
-            self.client=InfluxDBClient(config.INFLUXDB_IP,INFLUXDB_PORT,INFLUXDB_USER,',',dbname)
-        lock = threading.Lock()
+            self.client=InfluxDBClient(config.INFLUXDB_IP,config.INFLUXDB_PORT,config.INFLUXDB_USER,',',dbname)
+        self.lock = threading.Lock()
     def Insert(self,json_body):
-        if lock.acquire():
+        if self.lock.acquire():
             self.client.write_points(json_body)
             print('saved')
-            lock.release()
+            self.lock.release()
         #except (Exception):
         #    logger.error('HTTP Error: %d\t%s\t%s\t%s' % (e.code, e.reason, e.geturl(), e.read()))
 

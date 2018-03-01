@@ -12,7 +12,7 @@ import time
 #from influxdb import InfluxDBClient
 #from lib.api_service import WorkManager
 from api.huobipro.HuobiServices import *
-from api.influxdb.InfluxDBHelper import *
+from api.influxdb.influxdb_helper import *
 from settings import config
 
 import json
