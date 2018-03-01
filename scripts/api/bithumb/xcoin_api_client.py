@@ -1,33 +1,36 @@
 #
-# XCoin API-call related functions
+# @brief XCoin API-call related functions (for Python 2.x, 3.x)
 #
-# @author	btckorea
-# @date	2017-04-12
+# @author btckorea
+# @date 2017-04-14
 #
-# Compatible with python3 version.
+# Modified it a little bit
 
 import sys
 import time
 import math
 import base64
 import hmac, hashlib
-import urllib.parse
+
+PY3 = sys.version_info[0] > 2
+if PY3:
+	import urllib.parse
+else:
+	import urllib
+
 import pycurl
 import json
-import certifi
-
+import requests
 
 class XCoinAPI:
-	api_url = "https://api.bithumb.com";
-	api_key = "";
-	api_secret = "";
+	api_url = "https://api.bithumb.com"
 
 	def __init__(self, api_key, api_secret):
-		self.api_key = api_key;
-		self.api_secret = api_secret;
+		self.api_key = api_key
+		self.api_secret = api_secret
 
-	def body_callback(self, buf):
-		self.contents = buf;
+	def http_body_callback(self, buf):
+		self.contents = buf
 
 	def microtime(self, get_as_float = False):
 		if get_as_float:
@@ -35,57 +38,76 @@ class XCoinAPI:
 		else:
 			return '%f %d' % math.modf(time.time())
 
-	def usecTime(self) :
+	def microsectime(self) :
 		mt = self.microtime(False)
-		mt_array = mt.split(" ")[:2];
-		return mt_array[1] + mt_array[0][2:5];
+		mt_array = mt.split(" ")[:2]
+		return mt_array[1] + mt_array[0][2:5]
 
-	def xcoinApiCall(self, endpoint, rgParams):
+	def publicCall(self, endpoint, params={}):
+		url = self.api_url + endpoint
+		res = requests.get(url, params = params)
+		return res.json()
+
+	def xcoinApiCall(self, endpoint, p_params={}, params={}):
 		# 1. Api-Sign and Api-Nonce information generation.
 		# 2. Request related information from the Bithumb API server.
 		#
-		# - nonce: it is an arbitrary number that may only be used once.
+		# - nonce: it is an arbitrary number that may only be used once. (Microseconds)
 		# - api_sign: API signature information created in various combinations values.
-
+		"""
+		parameters
+		----------
+		p_params: dict
+			- parameters used in private api call
+		params: dict
+			- parameters used in public api call
+		"""
 		endpoint_item_array = {
 			"endpoint" : endpoint
 		};
 
-		uri_array = dict(endpoint_item_array, **rgParams); # Concatenate the two arrays.
+		uri_array = dict(endpoint_item_array, **p_params); # Concatenate the two arrays.
 
-		str_data = urllib.parse.urlencode(uri_array);
+		if PY3:
+			e_uri_data = urllib.parse.urlencode(uri_array)
+		else:
+			e_uri_data = urllib.urlencode(uri_array)
 
-		nonce = self.usecTime();
+		# Api-Nonce information generation.
+		nonce = self.microsectime()
 
-		data = endpoint + chr(0) + str_data + chr(0) + nonce;
-		utf8_data = data.encode('utf-8');
+		# Api-Sign information generation.
+		hmac_key = self.api_secret
+		utf8_hmac_key = hmac_key.encode('utf-8')
 
-		key = self.api_secret;
-		utf8_key = key.encode('utf-8');
+		hmac_data = endpoint + chr(0) + e_uri_data + chr(0) + nonce
+		utf8_hmac_data = hmac_data.encode('utf-8')
 
-		h = hmac.new(bytes(utf8_key), utf8_data, hashlib.sha512);
-		hex_output = h.hexdigest();
-		utf8_hex_output = hex_output.encode('utf-8');
+		hmh = hmac.new(bytes(utf8_hmac_key), utf8_hmac_data, hashlib.sha512)
+		hmac_hash_hex_output = hmh.hexdigest()
+		utf8_hmac_hash_hex_output = hmac_hash_hex_output.encode('utf-8')
+		utf8_hmac_hash = base64.b64encode(utf8_hmac_hash_hex_output)
 
-		api_sign = base64.b64encode(utf8_hex_output);
-		utf8_api_sign = api_sign.decode('utf-8');
+		api_sign = utf8_hmac_hash
+		utf8_api_sign = api_sign.decode('utf-8')
 
+		# Connects to Bithumb API server and returns JSON result value.
+		curl_handle = pycurl.Curl()
+		curl_handle.setopt(pycurl.POST, 1)
+		#curl_handle.setopt(pycurl.VERBOSE, 1) # vervose mode :: 1 => True, 0 => False
+		curl_handle.setopt(pycurl.POSTFIELDS, e_uri_data)
 
-		curl_handle = pycurl.Curl();
-		curl_handle.setopt(pycurl.POST, 1);
-		#curl_handle.setopt(pycurl.VERBOSE, 1); # vervose mode :: 1 => True, 0 => False
-		curl_handle.setopt(pycurl.POSTFIELDS, str_data);
+		if params:
+			url = self.api_url + endpoint + '?' + urllib.parse.urlencode(params)
+		else:
+			url = self.api_url + endpoint
 
-		url = self.api_url + endpoint;
-		curl_handle.setopt(pycurl.CAINFO, certifi.where())
-		curl_handle.setopt(curl_handle.URL, url);
-		curl_handle.setopt(curl_handle.HTTPHEADER, ['Api-Key: ' + self.api_key, 'Api-Sign: ' + utf8_api_sign, 'Api-Nonce: ' + nonce]);
-		curl_handle.setopt(curl_handle.WRITEFUNCTION, self.body_callback);
-		curl_handle.perform();
+		curl_handle.setopt(curl_handle.URL, url)
+		curl_handle.setopt(curl_handle.HTTPHEADER, ['Api-Key: ' + self.api_key, 'Api-Sign: ' + utf8_api_sign, 'Api-Nonce: ' + nonce])
+		curl_handle.setopt(curl_handle.WRITEFUNCTION, self.http_body_callback)
+		curl_handle.perform()
 
-		#response_code = curl_handle.getinfo(pycurl.RESPONSE_CODE); # Get http response status code.
+		#response_code = curl_handle.getinfo(pycurl.RESPONSE_CODE) # Get http response status code.
 
-		curl_handle.close();
-		return (self.contents);
-		#return (json.loads(self.contents));
-
+		curl_handle.close()
+		return (json.loads(self.contents))
