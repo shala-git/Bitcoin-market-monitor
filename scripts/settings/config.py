@@ -21,15 +21,27 @@ PRICE_UPDATE_FASTEST_INTERVAL = 5 #市场金额Update延时 最快 5s
 PRICE_UPDATE_SLOWEST_INTERVAL = 5 #市场金额Update延时 最慢 5s
 
 REQUEST_TIMEOUT = 5
+
+BALANCE_UPDATE_INTERVAL = 60
+
+
+EXCHANGE_XXX = 190
+
 #INFLUXDB configs
 INFLUXDB_IP = 'localhost'
 INFLUXDB_PORT = 8086
 INFLUXDB_USER = 'root'
 INFLUXDB_DATABASE = 'grafana'
 
-BALANCE_UPDATE_INTERVAL = 60
-
-EXCHANGE_XXX = 190
-
+#Market资料
 HUOBI_MARKET={'btcusdt','ethusdt','ltcusdt','etcusdt','bchusdt'} #火币
 BITHUMB_MARKET={'ALL'} #bithumb
+#各个平台API基础货币类型
+TRADE_CURRENCY_BASE = {
+        # zb价格接口
+        'zb': 'http://api.zb.com/data/v1/ticker', #ZB市场基础币种
+        'bithumb': 'KRW', #Bithumb市场基础币种
+	'bitflyer': 'https://bitflyer.jp/api/echo/price', #bitflyer市场基础币种
+	'okex': 'https://www.okex.com/api/v1/ticker',#okex市场基础币种
+	'huobi':'USD'#火币市场基础币种
+        }

@@ -27,49 +27,12 @@ class PriceUpdater(object):
         #self._url = config.PRICE_INTERFACE['huobi']
         self.client=influxdb_client
         #self._request_timeout = int(config.REQUEST_TIMEOUT)
-        #self._price = 0.0
+        self.exchange = {}
         self._name = 'PriceUpdater'
-        #self.ticker_index={'btcusdt','ethusdt','ltcusdt','etcusdt','bchusdt'}
 
     @property
     def name(self):
         return self._name
-
-    def _getDataFromURL(self,index):
-        try:
-            textmod ={'symbol':index}
-            textmod = urllib.urlencode(textmod)
-            req = urllib2.Request(url = '%s%s%s' % (self._url,'?',textmod))
-            response = urllib2.urlopen(req, timeout=self._request_timeout)
-            res = response.read()
-            data = json.loads(res)
-            buy_value = data['tick']['bid'][0]
-            high_value = data['tick']['high']#���߼�
-            last_value = data['tick']['close']#���³ɽ���
-            low_value = data['tick']['low']#���ͼ�
-            sell_value = data['tick']['ask'][0]#��һ��
-            vol_value = data['tick']['vol'] #24Сʱ�ɽ���
-            json_body = [
-                {
-                    "measurement": "huobi",
-                    "tags": {
-                    "coin": index,
-                        "index": index
-                    },
-                    "fields": {
-                    "buy": float(buy_value),
-                    "high":float(high_value),
-                    "last":float(last_value),
-                    "low":float(low_value),
-                    "sell":float(sell_value),
-                    "vol":float(vol_value)
-                    }
-                }
-            ]
-            self.client.write_points(json_body)
-        except (Exception):
-            logger.error('HTTP Error: %d\t%s\t%s\t%s' % (e.code, e.reason, e.geturl(), e.read()))
-
 
     def _wget(self):
         ret = False
@@ -105,8 +68,13 @@ class PriceUpdater(object):
         #    self._price = self._parse(data)
         #    logger.info('price %0.2f' % (self._price))
         return data
+
+    def set_exchange(self, data):
+        self.exchange = data
+        pass
         
-    def HuobiUpdater(self):
+    def huobi_updater(self, platform='huobi'):
+        print(self.exchange['KRW']['CNY'])
         i=0
         market_list = list(config.HUOBI_MARKET) 
         while i < len(market_list):
@@ -138,15 +106,42 @@ class PriceUpdater(object):
                     }
                 ]
                 print (json_body)
-                self.client.Insert(json_body)
+                #self.client.Insert(json_body)
             i += 1
+            
+    def parse_influxdb_data(self, source, platform):
+        if config.TRADE_CURRENCY_BASE[platform] is 'USD'
+        
+        db_data = [
+                    {
+                        "measurement": platform,
+                        "tags": {
+                            "coin": market_list[i],
+                            "base": market_list[i]
+                        },
+                        "fields": {
+                        "buy_usd": float(source['buy']),
+                        "buy_cny": float(source['buy']*float(self.exchange['USD']['CNY'])),
+                        "high":float(high_value),
+                        "last":float(last_value),
+                        "low":float(low_value),
+                        "sell":float(sell_value),
+                        "vol":float(vol_value)
+                        }
+                    }
+                ]
+        return db_data
+        pass
 
     pass
 
 def main():
     idb = InfluxDBHelper()
+    exchangedata = {'KRW': {'CNY': 0.0058398, 'USD': 0.00091961}, 'USD': {'CNY': 6.3503, 'KRW': 1087.4}, 'CNY': {'KRW': 171.24, 'USD': 0.15747}}
+    
     p = PriceUpdater(idb)
-    p.HuobiUpdater()
+    p.set_exchange(exchangedata)
+    p.huobi_updater()
     pass
 
 if __name__ == '__main__':

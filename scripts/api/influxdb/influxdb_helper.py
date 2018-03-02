@@ -26,11 +26,13 @@ class InfluxDBHelper(object):
             self.client=InfluxDBClient(config.INFLUXDB_IP,config.INFLUXDB_PORT,config.INFLUXDB_USER,',',dbname)
         self.lock = threading.Lock()
     def Insert(self,json_body):
-        if self.lock.acquire():
-            self.client.write_points(json_body)
-            print('saved')
-            self.lock.release()
-        #except (Exception):
+        try:
+            if self.lock.acquire():
+                self.client.write_points(json_body)
+                print('saved')
+                self.lock.release()
+        except Exception as e:
+            print (e)
         #    logger.error('HTTP Error: %d\t%s\t%s\t%s' % (e.code, e.reason, e.geturl(), e.read()))
 
 def main():
