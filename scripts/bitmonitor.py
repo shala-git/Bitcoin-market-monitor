@@ -9,6 +9,7 @@ from settings import config
 from priceupdate import *
 from api.influxdb.influxdb_helper import *
 from exchange import *
+from lib.logger_service import logger
 
 class BitMonitor(object):
     '''
@@ -22,7 +23,7 @@ class BitMonitor(object):
         ex_td = threading.Thread(target=self.update_exchange)
         self.isRun = True
         ex_td.start()
-        #logger.info('Exchange updater start')
+        logger.info('Exchange updater start')
 
         self.idb = InfluxDBHelper()
         self.pum = PriceUpdater(self.idb)
@@ -57,7 +58,7 @@ class BitMonitor(object):
     def exchange_callback(self, dic):
         self.exchange_data = dic
         self.pum.set_exchange(self.exchange_data)
-        print
+        logger.info('exchange callback : %s' % self.exchange_data)
 
     def update_exchange(self):
         while self.isRun:
