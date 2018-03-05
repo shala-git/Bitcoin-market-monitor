@@ -24,9 +24,6 @@ REQUEST_TIMEOUT = 5
 
 BALANCE_UPDATE_INTERVAL = 60
 
-
-EXCHANGE_XXX = 190
-
 #INFLUXDB configs
 INFLUXDB_IP = 'localhost'
 INFLUXDB_PORT = 8086
@@ -35,7 +32,7 @@ INFLUXDB_DATABASE = 'grafana'
 
 #Market资料
 HUOBI_MARKET={'btcusdt','ethusdt','ltcusdt','etcusdt','bchusdt'} #火币
-BITHUMB_MARKET={'ALL'} #bithumb
+BITHUMB_MARKET={'BTC','ETH','ETC','LTC','BCH'} #bithumb
 #各个平台API基础货币类型
 TRADE_CURRENCY_BASE = {
         # zb价格接口

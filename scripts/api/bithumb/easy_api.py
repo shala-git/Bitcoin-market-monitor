@@ -1,4 +1,4 @@
-from xcoin_api_client import XCoinAPI
+from api.bithumb.xcoin_api_client import XCoinAPI
 from datetime import datetime
 
 class EasyAPI(XCoinAPI):
