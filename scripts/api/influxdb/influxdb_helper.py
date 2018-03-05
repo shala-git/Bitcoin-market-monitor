@@ -29,7 +29,7 @@ class InfluxDBHelper(object):
         try:
             if self.lock.acquire():
                 self.client.write_points(json_body)
-                print('saved')
+                #print('saved')
                 self.lock.release()
         except Exception as e:
             print (e)

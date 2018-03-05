@@ -12,7 +12,6 @@ import time
 #from influxdb import InfluxDBClient
 from api.bithumb.easy_api import EasyAPI
 from api.huobipro.HuobiServices import *
-from api.influxdb.influxdb_helper import *
 from settings import config
 
 import json

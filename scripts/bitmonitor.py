@@ -7,7 +7,7 @@ import time
 import traceback
 from settings import config
 from priceupdate import *
-#from lib.logger_service import logger
+from api.influxdb.influxdb_helper import *
 from exchange import *
 
 class BitMonitor(object):
