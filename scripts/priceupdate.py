@@ -10,7 +10,6 @@ import urllib
 #import urllib2
 import time
 #from influxdb import InfluxDBClient
-#from lib.api_service import WorkManager
 from api.bithumb.easy_api import EasyAPI
 from api.huobipro.HuobiServices import *
 from api.influxdb.influxdb_helper import *
@@ -57,20 +56,13 @@ class PriceUpdater(object):
         return price
 
     def query(self):
-        ret, data = self._wget()
-        logger.info('request %s' % ret)
-        #if ret:
-        #    self._price = self._parse(data)
-        #    logger.info('price %0.2f' % (self._price))
-        return data
-
-    def query_self(self):
-        ret, data = self._wget()
-        logger.info('request %s - "%s"' % (ret, data))
-        #if ret:
-        #    self._price = self._parse(data)
-        #    logger.info('price %0.2f' % (self._price))
-        return data
+        try:
+            self.bithumb_updater()
+            self.huobi_updater()
+            return True
+        except Exception as e:
+            #logger.error('Error: %s' % str(e))
+            return False
 
     def set_exchange(self, data):
         self.exchange = data
@@ -113,6 +105,8 @@ class PriceUpdater(object):
             i += 1
 
     def parse_influxdb_data(self, source, platform, coin):
+        #print ('---------------------------------')
+        #print (self.exchange)
         if platform is 'huobi':
             db_data = [
                         {
@@ -163,7 +157,7 @@ class PriceUpdater(object):
         return db_data
         pass
     def save(self, data):
-        print(data)
+        #print (data)
         self.client.Insert(data)
         pass
 
