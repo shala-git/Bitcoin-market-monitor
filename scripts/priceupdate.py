@@ -12,6 +12,7 @@ import time
 #from influxdb import InfluxDBClient
 from api.bithumb.easy_api import EasyAPI
 from api.huobipro.HuobiServices import *
+from api.okcoin.OkcoinSpotAPI import OKCoinSpot
 from settings import config
 
 import json
@@ -30,6 +31,7 @@ class PriceUpdater(object):
         self._name = 'PriceUpdater'
 
         self.bithumb_api=EasyAPI('','');
+        self.okcoinSpot = OKCoinSpot(config.OKCOIN_RESTURL,'','')
 
     @property
     def name(self):
@@ -58,6 +60,7 @@ class PriceUpdater(object):
         try:
             self.bithumb_updater()
             self.huobi_updater()
+            self.okcoin_update()
             return True
         except Exception as e:
             #logger.error('Error: %s' % str(e))
@@ -103,10 +106,29 @@ class PriceUpdater(object):
                 self.save(insert_data)
             i += 1
 
+    def okcoin_updater(self, platform='okcoin'):
+        i=0
+        market_list = list(config.OKCOIN_MARKET)
+        while i < len(market_list):
+            res = self.okcoinSpot.ticker(market_list[i])
+            if res is None:
+                continue
+            else:
+                source = {}
+                source['buy'] = res['ticker']['buy']
+                source['high'] = res['ticker']['high']#���߼�
+                source['last'] = res['ticker']['last']#���³ɽ���
+                source['low'] = res['ticker']['low']#���ͼ�
+                source['sell'] = res['ticker']['sell']#��һ��
+
+                #vol_value = res['tick']['vol'] #24Сʱ�ɽ���
+                
+                insert_data = self.parse_influxdb_data(source,'okcoin',market_list[i])
+                self.save(insert_data)
+            i += 1
+
     def parse_influxdb_data(self, source, platform, coin):
-        #print ('---------------------------------')
-        #print (self.exchange)
-        if platform is 'huobi':
+        if platform is 'huobi' or 'okcoin':
             db_data = [
                         {
                             "measurement": platform,
@@ -156,20 +178,21 @@ class PriceUpdater(object):
         return db_data
         pass
     def save(self, data):
-        #print (data)
-        self.client.Insert(data)
+        print (data)
+        #self.client.Insert(data)
         pass
 
     pass
 
 def main():
-    idb = InfluxDBHelper()
+    #idb = InfluxDBHelper()
     exchangedata = {'KRW': {'CNY': 0.0058398, 'USD': 0.00091961}, 'USD': {'CNY': 6.3503, 'KRW': 1087.4}, 'CNY': {'KRW': 171.24, 'USD': 0.15747}}
 
-    p = PriceUpdater(idb)
+    p = PriceUpdater(None)
     p.set_exchange(exchangedata)
-    p.bithumb_updater()
-    p.huobi_updater()
+    #p.bithumb_updater()
+    #p.huobi_updater()
+    p.okcoin_updater()
     pass
 
 if __name__ == '__main__':
