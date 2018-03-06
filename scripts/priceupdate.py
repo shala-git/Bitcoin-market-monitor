@@ -60,7 +60,7 @@ class PriceUpdater(object):
         try:
             self.bithumb_updater()
             self.huobi_updater()
-            self.okcoin_update()
+            self.okcoin_updater()
             return True
         except Exception as e:
             #logger.error('Error: %s' % str(e))
@@ -178,8 +178,8 @@ class PriceUpdater(object):
         return db_data
         pass
     def save(self, data):
-        print (data)
-        #self.client.Insert(data)
+        #print (data)
+        self.client.Insert(data)
         pass
 
     pass
