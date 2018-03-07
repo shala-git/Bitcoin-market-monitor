@@ -14,6 +14,7 @@ from api.bithumb.easy_api import EasyAPI
 from api.huobipro.HuobiServices import *
 from api.okcoin.OkcoinSpotAPI import OKCoinSpot
 from settings import config
+from lib.arbitrage_calculate import calculate
 
 import json
 
@@ -61,6 +62,7 @@ class PriceUpdater(object):
             self.bithumb_updater()
             self.huobi_updater()
             self.okcoin_updater()
+            #calculate.run_calculate()
             return True
         except Exception as e:
             #logger.error('Error: %s' % str(e))
@@ -68,6 +70,7 @@ class PriceUpdater(object):
 
     def set_exchange(self, data):
         self.exchange = data
+        calculate.set_exchange(data)
         pass
 
     def bithumb_updater(self, platform='bithumb'):
@@ -162,14 +165,19 @@ class PriceUpdater(object):
                             "fields": {
                             "buy_usd": float(source['buy'])*float(self.exchange[config.TRADE_CURRENCY_BASE[platform]]['USD']),
                             "buy_cny": float(source['buy'])*float(self.exchange[config.TRADE_CURRENCY_BASE[platform]]['CNY']),
+                            "buy_krw": float(source['buy']),
                             "high_usd": float(source['high'])*float(self.exchange[config.TRADE_CURRENCY_BASE[platform]]['USD']),
-                            "high_usd": float(source['high'])*float(self.exchange[config.TRADE_CURRENCY_BASE[platform]]['CNY']),
+                            "high_cny": float(source['high'])*float(self.exchange[config.TRADE_CURRENCY_BASE[platform]]['CNY']),
+                            "high_krw": float(source['high']),
                             "last_usd": float(source['last'])*float(self.exchange[config.TRADE_CURRENCY_BASE[platform]]['USD']),
                             "last_cny": float(source['last'])*float(self.exchange[config.TRADE_CURRENCY_BASE[platform]]['CNY']),
+                            "last_krw": float(source['last']),
                             "low_usd": float(source['low'])*float(self.exchange[config.TRADE_CURRENCY_BASE[platform]]['USD']),
                             "low_cny": float(source['low'])*float(self.exchange[config.TRADE_CURRENCY_BASE[platform]]['CNY']),
+                            "low_krw": float(source['low']),
                             "sell_usd": float(source['sell'])*float(self.exchange[config.TRADE_CURRENCY_BASE[platform]]['USD']),
-                            "sell_cny": float(source['sell'])*float(self.exchange[config.TRADE_CURRENCY_BASE[platform]]['CNY'])
+                            "sell_cny": float(source['sell'])*float(self.exchange[config.TRADE_CURRENCY_BASE[platform]]['CNY']),
+                            "sell_krw": float(source['sell'])
                             #"vol_usd":float(source['vol'])
                             }
                         }
@@ -178,8 +186,11 @@ class PriceUpdater(object):
         return db_data
         pass
     def save(self, data):
-        #print (data)
-        self.client.Insert(data)
+        if data[0]['tags']['coin'].lower().find('btc') > -1:
+            #print (data[0]['measurement'])
+            #print (data)
+            calculate.set_price_data(data[0]['measurement'], data)
+        #self.client.Insert(data)
         pass
 
     pass
@@ -190,9 +201,7 @@ def main():
 
     p = PriceUpdater(None)
     p.set_exchange(exchangedata)
-    #p.bithumb_updater()
-    #p.huobi_updater()
-    p.okcoin_updater()
+    p.query()
     pass
 
 if __name__ == '__main__':
