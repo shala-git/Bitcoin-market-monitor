@@ -62,9 +62,13 @@ class PriceUpdater(object):
             self.bithumb_updater()
             self.huobi_updater()
             self.okcoin_updater()
-            #calculate.run_calculate()
+            arbitrage = calculate.run_calculate()
+            if arbitrage not None:
+                self.client.Insert(arbitrage)
+                pass
             return True
         except Exception as e:
+            print (e)
             #logger.error('Error: %s' % str(e))
             return False
 
@@ -190,7 +194,7 @@ class PriceUpdater(object):
             #print (data[0]['measurement'])
             #print (data)
             calculate.set_price_data(data[0]['measurement'], data)
-        #self.client.Insert(data)
+        self.client.Insert(data)
         pass
 
     pass

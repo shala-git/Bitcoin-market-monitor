@@ -11,3 +11,6 @@ TRADE_FEE ={'huobi':0.002,'bithumb':0.0015,'bithumb_coupon':0.00075}#买入费�
 TRANSFER_FEE = {'huobi':0.001}#转币费率
 ARBITRAGE_SOURCE = {'huobi'}
 ARBITRAGE_TARGET = {'bithumb','bithumb_coupon'}
+
+HUOBI_USDT_CNY_URL = "https://otc.huobi.pro/#/trade/list?coin=2&type=1&big=0"
+HUOBI_BTC_CNY_URL = "https://api-otc.hb-otc.net/v1/otc/trade/list/public"
