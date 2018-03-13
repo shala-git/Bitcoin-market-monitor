@@ -59,11 +59,15 @@ class PriceUpdater(object):
 
     def query(self):
         try:
+            print('bithumb price updater')
             self.bithumb_updater()
+            print('huobi price updater')
             self.huobi_updater()
+            print('okcoin price updater')
             self.okcoin_updater()
+            print('arbitrage calculation')
             arbitrage = calculate.run_calculate()
-            if arbitrage not None:
+            if arbitrage is not None:
                 self.client.Insert(arbitrage)
                 pass
             return True

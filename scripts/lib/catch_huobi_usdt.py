@@ -31,7 +31,7 @@ class CatchUSDT(object):
             req = urllib.request.Request(url)
             response = urllib.request.urlopen(req, timeout=10)
             res = response.read()
-            data = json.loads(res)
+            data = json.loads(res.decode())
 
             price_list = data['data']
             self.price_data = []

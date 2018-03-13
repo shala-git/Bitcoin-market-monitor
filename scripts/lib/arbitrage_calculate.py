@@ -44,7 +44,10 @@ class ArbitrageCalculate(object):
                 print ('买入价格 每个 %s 人民币'%buy_price)
                 
                 transfer_fee = arbitrage_config.TRANSFER_FEE[source] #转币费率
-                buy_one_final_amount = (buy_price - (buy_price * buy_fee)) / buy_price # 最终买入量
+                if source.find('huobi') > -1:
+                    buy_one_final_amount = buy_price / buy_price # 最终买入量
+                else:
+                    buy_one_final_amount = (buy_price - (buy_price * buy_fee)) / buy_price
                 transefr_final_amount = buy_one_final_amount - transfer_fee # 最终转币后剩余量
                 for target in arbitrage_config.ARBITRAGE_TARGET:
                     target_market = None
