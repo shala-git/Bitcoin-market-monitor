@@ -82,20 +82,23 @@ class PriceUpdater(object):
         pass
 
     def bithumb_updater(self, platform='bithumb'):
-        res = self.bithumb_api.get_ticker('ALL')
-        market_list = list(config.BITHUMB_MARKET)
-        for index in market_list:
-            if res['status'] == '0000':
-                source = {}
-                source['buy'] = res['data'][index]['buy_price']
-                source['high'] = res['data'][index]['max_price']
-                source['last'] = res['data'][index]['closing_price']
-                source['low'] = res['data'][index]['min_price']
-                source['sell'] = res['data'][index]['sell_price']
+        try:
+            res = self.bithumb_api.get_ticker('ALL')
+            market_list = list(config.BITHUMB_MARKET)
+            for index in market_list:
+                if res['status'] == '0000':
+                    source = {}
+                    source['buy'] = res['data'][index]['buy_price']
+                    source['high'] = res['data'][index]['max_price']
+                    source['last'] = res['data'][index]['closing_price']
+                    source['low'] = res['data'][index]['min_price']
+                    source['sell'] = res['data'][index]['sell_price']
 
-                #vol_value = data['data'][index]['volume_1day']
-                insert_data = self.parse_influxdb_data(source,'bithumb',index)
-                self.save(insert_data)
+                    #vol_value = data['data'][index]['volume_1day']
+                    insert_data = self.parse_influxdb_data(source,'bithumb',index)
+                    self.save(insert_data)
+        except Exception as e:
+                print(e)
     def huobi_updater(self, platform='huobi'):
         i=0
         market_list = list(config.HUOBI_MARKET)
@@ -117,28 +120,31 @@ class PriceUpdater(object):
                     insert_data = self.parse_influxdb_data(source,'huobi',market_list[i])
                     self.save(insert_data)
             except Exception as e:
-                continue
+                print(e)
             i += 1
 
     def okcoin_updater(self, platform='okcoin'):
         i=0
         market_list = list(config.OKCOIN_MARKET)
         while i < len(market_list):
-            res = self.okcoinSpot.ticker(market_list[i])
-            if res is None:
-                continue
-            else:
-                source = {}
-                source['buy'] = res['ticker']['buy']
-                source['high'] = res['ticker']['high']#���߼�
-                source['last'] = res['ticker']['last']#���³ɽ���
-                source['low'] = res['ticker']['low']#���ͼ�
-                source['sell'] = res['ticker']['sell']#��һ��
+            try:
+                res = self.okcoinSpot.ticker(market_list[i])
+                if res is None:
+                    continue
+                else:
+                    source = {}
+                    source['buy'] = res['ticker']['buy']
+                    source['high'] = res['ticker']['high']#���߼�
+                    source['last'] = res['ticker']['last']#���³ɽ���
+                    source['low'] = res['ticker']['low']#���ͼ�
+                    source['sell'] = res['ticker']['sell']#��һ��
 
-                #vol_value = res['tick']['vol'] #24Сʱ�ɽ���
-                
-                insert_data = self.parse_influxdb_data(source,'okcoin',market_list[i])
-                self.save(insert_data)
+                    #vol_value = res['tick']['vol'] #24Сʱ�ɽ���
+                    
+                    insert_data = self.parse_influxdb_data(source,'okcoin',market_list[i])
+                    self.save(insert_data)
+            except Exception as e:
+                print(e)
             i += 1
 
     def parse_influxdb_data(self, source, platform, coin):
