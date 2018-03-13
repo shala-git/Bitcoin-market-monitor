@@ -10,7 +10,7 @@ import logging
 import multiprocessing
 import math
 import sys
-sys.path.append("..\\..")
+sys.path.append("../..")
 from api.huobipro.HuobiServices import *
 #from utils.helper import *
 
@@ -104,24 +104,23 @@ class Triangle:
                 self.market_price_tick["{0}_{1}".format(self.quote_cur, self.mid_cur)].get("bids")[0][0]
                 """
 
-            self.market_price_tick["{0}_{1}".format(self.base_cur, self.quote_cur)] = \
-                get_ticker("{0}{1}".format(self.base_cur, self.quote_cur))
-
-            #self.market_price_tick["{0}_{1}".format(self.base_cur, self.quote_cur)] = {'ts': 1520929452005, 'status': 'ok', 'ch': 'market.ltcbtc.detail.merged', 'tick': {'close': 0.019254, 'vol': 220.2048962323, 'id': 3750340493, 'high': 0.019959, 'open': 0.019509, 'version': 3750340493, 'ask': [0.019318, 0.2802], 'bid': [0.019254, 0.3005], 'low': 0.016, 'count': 3917, 'amount': 11474.7314}}
+            self.market_price_tick = {'btc_usdt': {'tick': {'close': 9178.91, 'bid': [9178.63, 0.001], 'version': 3751638971, 'high': 9849.32, 'count': 119385, 'low': 8800.0, 'open': 9526.86, 'amount': 20256.313071784956, 'ask': [9178.91, 0.0042], 'vol': 189057242.48476285, 'id': 3751638971}, 'status': 'ok', 'ts': 1520931410774, 'ch': 'market.btcusdt.detail.merged'}, 'eth_usdt': {'tick': {'close': 699.73, 'bid': [699.63, 0.1363], 'version': 3751638004, 'high': 737.44, 'count': 55835, 'low':  678.0, 'open': 724.59, 'amount': 75383.89765113144, 'ask': [699.73, 0.0826], 'vol': 53103873.652157925, 'id': 3751638004}, 'status': 'ok', 'ts': 1520931410661, 'ch': 'market.ethusdt.detail.merged'}, 'eth_btc': {'tick': {'close': 0.076279, 'bid': [0.076126, 7.0], 'version': 3751639256, 'high': 0.077463, 'count': 66592, 'low': 0.0743, 'open': 0.075978, 'amount': 19826.4566, 'ask': [0.076201, 0.0184], 'vol': 1506.3409135329, 'id': 3751639256}, 'status': 'ok', 'ts': 1520931410571, 'ch': 'market.ethbtc.detail.merged'}}
+            #self.market_price_tick["{0}_{1}".format(self.base_cur, self.quote_cur)] = \
+            #    get_ticker("{0}{1}".format(self.base_cur, self.quote_cur))
             market_price_sell_1 = \
                 self.market_price_tick["{0}_{1}".format(self.base_cur, self.quote_cur)].get("tick").get("ask")[0]
             market_price_buy_1 = \
                 self.market_price_tick["{0}_{1}".format(self.base_cur, self.quote_cur)].get("tick").get("bid")[0]
             print ("sell : {0} buy : {1}".format(market_price_sell_1,market_price_buy_1))
-            self.market_price_tick["{0}_{1}".format(self.base_cur, self.mid_cur)] = \
-                get_ticker("{0}{1}".format(self.base_cur, self.mid_cur))
+            #self.market_price_tick["{0}_{1}".format(self.base_cur, self.mid_cur)] = \
+            #    get_ticker("{0}{1}".format(self.base_cur, self.mid_cur))
             base_mid_price_buy_1 = \
                 self.market_price_tick["{0}_{1}".format(self.base_cur, self.mid_cur)].get("tick").get("ask")[0]
             base_mid_price_sell_1 = \
                 self.market_price_tick["{0}_{1}".format(self.base_cur, self.mid_cur)].get("tick").get("bid")[0]
             print ("sell : {0} buy : {1}".format(base_mid_price_buy_1,base_mid_price_sell_1))
-            self.market_price_tick["{0}_{1}".format(self.quote_cur, self.mid_cur)] = \
-                get_ticker("{0}{1}".format(self.quote_cur, self.mid_cur))
+            #self.market_price_tick["{0}_{1}".format(self.quote_cur, self.mid_cur)] = \
+            #    get_ticker("{0}{1}".format(self.quote_cur, self.mid_cur))
             quote_mid_price_sell_1 = \
                 self.market_price_tick["{0}_{1}".format(self.quote_cur, self.mid_cur)].get("tick").get("ask")[0]
             quote_mid_price_buy_1 = \
