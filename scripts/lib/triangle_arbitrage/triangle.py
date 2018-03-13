@@ -34,7 +34,7 @@ class Triangle:
         可以获得多少单位的quote currency（比如BTC）。
         当LTC对BTC的价格上涨时，同等单位的LTC能够兑换的BTC是增加的，而同等单位的BTC能够兑换的LTC是减少的。
     """
-    def __init__(self, base_cur="ltc", quote_cur="btc", mid_cur="usdt", interval=10):
+    def __init__(self, base_cur="eth", quote_cur="btc", mid_cur="usdt", interval=10):
         """
         初始化
         :param base_cur:  基准资产
@@ -72,7 +72,7 @@ class Triangle:
         self.base_mid_mid_reserve = 0.0
 
         # 最小的交易单位设定
-        self.min_trade_unit = 0.2   # LTC/BTC交易对，设置为0.2, ETH/BTC交易对，设置为0.02
+        self.min_trade_unit = 0.02   # LTC/BTC交易对，设置为0.2, ETH/BTC交易对，设置为0.02
 
         self.market_price_tick = dict()  # 记录触发套利的条件时的当前行情
 
@@ -89,6 +89,7 @@ class Triangle:
                 self.market_price_tick["{0}_{1}".format(self.base_cur, self.quote_cur)].get("asks")[0][0]
             market_price_buy_1 = \
                 self.market_price_tick["{0}_{1}".format(self.base_cur, self.quote_cur)].get("bids")[0][0]
+
             self.market_price_tick["{0}_{1}".format(self.base_cur, self.mid_cur)] = \
                 huobi_market.market_detail(self.base_cur, self.mid_cur)
             base_mid_price_buy_1 = \
@@ -102,10 +103,31 @@ class Triangle:
             quote_mid_price_buy_1 = \
                 self.market_price_tick["{0}_{1}".format(self.quote_cur, self.mid_cur)].get("bids")[0][0]
                 """
+
             self.market_price_tick["{0}_{1}".format(self.base_cur, self.quote_cur)] = \
                 get_ticker("{0}{1}".format(self.base_cur, self.quote_cur))
-            print (self.market_price_tick)
 
+            #self.market_price_tick["{0}_{1}".format(self.base_cur, self.quote_cur)] = {'ts': 1520929452005, 'status': 'ok', 'ch': 'market.ltcbtc.detail.merged', 'tick': {'close': 0.019254, 'vol': 220.2048962323, 'id': 3750340493, 'high': 0.019959, 'open': 0.019509, 'version': 3750340493, 'ask': [0.019318, 0.2802], 'bid': [0.019254, 0.3005], 'low': 0.016, 'count': 3917, 'amount': 11474.7314}}
+            market_price_sell_1 = \
+                self.market_price_tick["{0}_{1}".format(self.base_cur, self.quote_cur)].get("tick").get("ask")[0]
+            market_price_buy_1 = \
+                self.market_price_tick["{0}_{1}".format(self.base_cur, self.quote_cur)].get("tick").get("bid")[0]
+            print ("sell : {0} buy : {1}".format(market_price_sell_1,market_price_buy_1))
+            self.market_price_tick["{0}_{1}".format(self.base_cur, self.mid_cur)] = \
+                get_ticker("{0}{1}".format(self.base_cur, self.mid_cur))
+            base_mid_price_buy_1 = \
+                self.market_price_tick["{0}_{1}".format(self.base_cur, self.mid_cur)].get("tick").get("ask")[0]
+            base_mid_price_sell_1 = \
+                self.market_price_tick["{0}_{1}".format(self.base_cur, self.mid_cur)].get("tick").get("bid")[0]
+            print ("sell : {0} buy : {1}".format(base_mid_price_buy_1,base_mid_price_sell_1))
+            self.market_price_tick["{0}_{1}".format(self.quote_cur, self.mid_cur)] = \
+                get_ticker("{0}{1}".format(self.quote_cur, self.mid_cur))
+            quote_mid_price_sell_1 = \
+                self.market_price_tick["{0}_{1}".format(self.quote_cur, self.mid_cur)].get("tick").get("ask")[0]
+            quote_mid_price_buy_1 = \
+                self.market_price_tick["{0}_{1}".format(self.quote_cur, self.mid_cur)].get("tick").get("bid")[0]
+            print ("sell : {0} buy : {1}".format(quote_mid_price_sell_1,quote_mid_price_buy_1))
+            print (self.market_price_tick)
             # 检查正循环套利
             '''
                 三角套利的基本思路是，用两个市场（比如BTC/CNY，LTC/CNY）的价格（分别记为P1，P2），
@@ -476,7 +498,6 @@ class Triangle:
             time.sleep(0.1)
 
 if __name__ == "__main__":
-    print (get_ticker("ltcbtc"))
     triangle = Triangle()
     triangle.strategy()
     #while True:
