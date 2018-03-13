@@ -100,21 +100,24 @@ class PriceUpdater(object):
         i=0
         market_list = list(config.HUOBI_MARKET)
         while i < len(market_list):
-            res = get_ticker(market_list[i])
-            if res is None:
-                continue
-            else:
-                source = {}
-                source['buy'] = res['tick']['bid'][0]
-                source['high'] = res['tick']['high']#���߼�
-                source['last'] = res['tick']['close']#���³ɽ���
-                source['low'] = res['tick']['low']#���ͼ�
-                source['sell'] = res['tick']['ask'][0]#��һ��
+            try:
+                res = get_ticker(market_list[i])
+                if res is None:
+                    continue
+                else:
+                    source = {}
+                    source['buy'] = res['tick']['bid'][0]
+                    source['high'] = res['tick']['high']#���߼�
+                    source['last'] = res['tick']['close']#���³ɽ���
+                    source['low'] = res['tick']['low']#���ͼ�
+                    source['sell'] = res['tick']['ask'][0]#��һ��
 
                 #vol_value = res['tick']['vol'] #24Сʱ�ɽ���
 
-                insert_data = self.parse_influxdb_data(source,'huobi',market_list[i])
-                self.save(insert_data)
+                    insert_data = self.parse_influxdb_data(source,'huobi',market_list[i])
+                    self.save(insert_data)
+            except Exception as e:
+                continue
             i += 1
 
     def okcoin_updater(self, platform='okcoin'):
