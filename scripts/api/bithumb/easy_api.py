@@ -1,4 +1,4 @@
-from api.bithumb.xcoin_api_client import XCoinAPI
+from .xcoin_api_client import XCoinAPI
 from datetime import datetime
 
 class EasyAPI(XCoinAPI):
@@ -201,7 +201,7 @@ class EasyAPI(XCoinAPI):
         url = "/info/user_transactions"
 
         p_params = {
-            'offset': offest,
+            'offset': offset,
             'count': count,
             'searchGb': searchGb,
             'currency': currency

@@ -11,6 +11,8 @@ import time
 import math
 import base64
 import hmac, hashlib
+import certifi
+import io
 
 PY3 = sys.version_info[0] > 2
 if PY3:
@@ -31,6 +33,7 @@ class XCoinAPI:
 
 	def http_body_callback(self, buf):
 		self.contents = buf
+		print("aa - %s"%buf)
 
 	def microtime(self, get_as_float = False):
 		if get_as_float:
@@ -102,12 +105,17 @@ class XCoinAPI:
 		else:
 			url = self.api_url + endpoint
 
+		curl_handle.setopt(pycurl.CAINFO, certifi.where()) # Added by jahyeonbeak
+		buff = io.BytesIO()
+
 		curl_handle.setopt(curl_handle.URL, url)
 		curl_handle.setopt(curl_handle.HTTPHEADER, ['Api-Key: ' + self.api_key, 'Api-Sign: ' + utf8_api_sign, 'Api-Nonce: ' + nonce])
-		curl_handle.setopt(curl_handle.WRITEFUNCTION, self.http_body_callback)
+		#curl_handle.setopt(curl_handle.WRITEFUNCTION, self.http_body_callback)
+		curl_handle.setopt(curl_handle.WRITEFUNCTION, buff.write)
 		curl_handle.perform()
-
+		data = buff.getvalue().decode('UTF-8')
 		#response_code = curl_handle.getinfo(pycurl.RESPONSE_CODE) # Get http response status code.
 
 		curl_handle.close()
-		return (json.loads(self.contents))
+		#return (json.loads(self.contents))
+		return (json.loads(data))
