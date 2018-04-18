@@ -160,7 +160,7 @@ class PriceUpdater(object):
                                 "coin": coin,
                                 "base": config.TRADE_CURRENCY_BASE[platform]
                             },
-                            "time":source['time']
+                            "time":source['time'],
                             "fields": {
                             "buy_usd": float(source['buy']),
                             "buy_cny": float(source['buy'])*float(self.exchange[config.TRADE_CURRENCY_BASE[platform]]['CNY']),
