@@ -24,8 +24,8 @@ INFLUXDB_DATABASE = 'grafana'
 #Market资料
 HUOBI_MARKET={'btcusdt','ethusdt','ltcusdt','etcusdt','bchusdt'} #火币
 BITHUMB_MARKET={'BTC','ETH','ETC','LTC','BCH'} #bithumb
-OKCOIN_MARKET={'btc_usd','ltc_usd','eth_usd','etc_usd','bch_usd'} #okcoin
-OKCOIN_RESTURL = 'www.okcoin.com'
+OKCOIN_MARKET={'btc_usdt','ltc_usdt','eth_usdt','etc_usdt','bch_usdt'} #okcoin
+OKCOIN_RESTURL = 'www.okex.com'
 
 #各个平台API基础货币类型
 TRADE_CURRENCY_BASE = {
