@@ -8,7 +8,7 @@ import datetime
 
 def timestamp2rfc3339(ts):
     d = datetime.datetime.fromtimestamp(timestamp(ts))
-    r = rfc3339(d, utc=True, use_system_timezone=False)
+    r = rfc3339(d, utc=True, use_system_timezone=True)
     return r
 
 def timestamp2string(ts):
