@@ -15,6 +15,7 @@ from api.huobipro.HuobiServices import *
 from api.okcoin.OkcoinSpotAPI import OKCoinSpot
 from settings import config
 from lib.arbitrage_calculate import calculate
+from lib.timeformat import *
 
 import json
 
@@ -88,6 +89,7 @@ class PriceUpdater(object):
             for index in market_list:
                 if res['status'] == '0000':
                     source = {}
+                    source['time'] = res['date']
                     source['buy'] = res['data'][index]['buy_price']
                     source['high'] = res['data'][index]['max_price']
                     source['last'] = res['data'][index]['closing_price']
@@ -109,6 +111,7 @@ class PriceUpdater(object):
                     continue
                 else:
                     source = {}
+                    source['time'] = res['ts']
                     source['buy'] = res['tick']['bid'][0]
                     source['high'] = res['tick']['high']#���߼�
                     source['last'] = res['tick']['close']#���³ɽ���
@@ -133,6 +136,7 @@ class PriceUpdater(object):
                     continue
                 else:
                     source = {}
+                    source['time'] = res['date']
                     source['buy'] = res['ticker']['buy']
                     source['high'] = res['ticker']['high']#���߼�
                     source['last'] = res['ticker']['last']#���³ɽ���
@@ -156,6 +160,7 @@ class PriceUpdater(object):
                                 "coin": coin,
                                 "base": config.TRADE_CURRENCY_BASE[platform]
                             },
+                            "time":source['time']
                             "fields": {
                             "buy_usd": float(source['buy']),
                             "buy_cny": float(source['buy'])*float(self.exchange[config.TRADE_CURRENCY_BASE[platform]]['CNY']),
